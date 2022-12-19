@@ -8,22 +8,28 @@ btn.addEventListener("click", async (e) => {
   e.preventDefault();
 
   if (email.value !== "" && password.value !== "") {
-    const da = await login(email.value, password.value);
-    console.log(da);
+
+    const da = await loginPost(email.value, password.value);
     if (da.success) {
-      window.location.href = "/dashboard.html";
+      await loginGet(da.data.user.token)
+    }
+    if (da.success) {
+      // if (localStorage.getItem('token')) {
+      // console.log("hi dashboard");
+      window.location.href = "/dashboard.html"
+      // }
     } else {
       errorDiv.innerHTML = da.message;
       errorDiv.classList.add("color");
     }
   } else {
-    errorDiv.innerHTML = "Plz enter valid data";
+    errorDiv.innerHTML = "Plz fill data";
     errorDiv.classList.add("color");
   }
 });
 
-const login = async (a, b) => {
-  const resp = await fetch("https://48be74bd44a6.ngrok.io/login", {
+const loginPost = async (a, b) => {
+  const resp = await fetch("https://abad9fe48b48.ngrok.io/login", {
     method: "POST",
 
     body: JSON.stringify({
@@ -35,7 +41,16 @@ const login = async (a, b) => {
     },
   });
   const response = await resp.json();
-  //   console.log(response.data.user);
-
   return response;
 };
+
+// const loginGet = async (token) => {
+//   localStorage.setItem('token', token)
+//   const resp = await fetch(`https://abad9fe48b48.ngrok.io/validate?token=${token}`);
+//   const response = await resp.json();
+//   return response;
+// }
+
+const loginGet = (token) => {
+  axios.get(`https://abad9fe48b48.ngrok.io/validate?token=${token}`).then(response => console.log(response)).catch(error => console.log(error));
+}
